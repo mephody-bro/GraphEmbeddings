@@ -1,82 +1,52 @@
-import os
-from itertools import product
-from pathlib import Path
+import numpy as np
 
-import traceback
-
-from link_prediction.Runner import run
-from transformation.HistLossConfiguration import HistLossConfiguration
-from transformation.RunConfiguration import RunConfiguration
+from .graph_sampler import GraphSampler
+from .metric import calc_link_prediction_score
 
 
-def main():
-    methods = []
+class LinkerExperiment:
+    def __init__(self, config, embedder, graph):
+        self.config = config
+        self.embedder = embedder
+        self.graph = graph
 
-    methods += ['deepwalk', 'hope', 'sdne']
-    metrics = ['EMD']
-    simmatrix_methods = ['ID']
-    loss_methods = ['ASIM']
-    calc_pos_methods = ['NORMAL']
-    calc_neg_methods = ['IGNORE-NEG']
-    calc_hist_methods = ['TF-KDE']
-    linearities = ['linear']
-
-    for (metric,
-         simmatrix_method,
-         loss_method,
-         calc_pos_method,
-         calc_neg_method,
-         calc_hist_method,
-         linearity) in product(metrics,
-                                      simmatrix_methods,
-                                      loss_methods,
-                                      calc_pos_methods,
-                                      calc_neg_methods,
-                                      calc_hist_methods,
-                               linearities):
-        if (calc_neg_method == 'WEIGHTED') ^ (calc_pos_method == 'WEIGHTED'):
-            continue
-        methods += ['hist_loss_' +
-                    str(HistLossConfiguration(metric,
-                                              simmatrix_method,
-                                              loss_method,
-                                              calc_pos_method,
-                                              calc_neg_method,
-                                              calc_hist_method,
-                                              linearity
-                                              ))]
-    dimensions = [4, 8, 16, 32]
-    names = []
-    # names += [
-    #     'sbm-01-0001',
-    #     'sbm-01-0005',
-    #     'sbm-01-001',
-    #     'sbm-01-002',
-    #     'sbm-01-004',
-    #     'sbm-01-005',
-    #     'sbm-01-006',
-    #     'sbm-01-007',
-    # ]
-    names += ['facebook']
-
-    path_to_dumps = Path(os.path.dirname(os.path.abspath(__file__))) / 'dumps'
-    print("Path to dumps: {}".format(path_to_dumps))
-
-    res = {}
-    for (method, name, dim) in product(methods, names, dimensions):
-        print(method, name, dim)
-        try:
-            a = run(
-                RunConfiguration(method, name, dim),
-                path_to_dumps=path_to_dumps,
-                score='f1'
-            )
-            print("'" + method + ' ' + name + ' ' + str(dim) + "': " + str(a) + ',')
-            res[method + ' ' + name + ' ' + str(dim)] = a
-        except Exception:
-            traceback.print_exc()
-    print(res)
+    def run(self):
+        method, name, dim = self.config['embedder'], self.config['dataset'], self.config['dimension']
+        a = self._run(self.config, self.embedder, self.graph, score='f1')
+        print("'" + method + ' ' + name + ' ' + str(dim) + "': " + str(a) + ',')
 
 
-if __name__ == '__main__':
-    main()
+    def _run(self, config, embedder, graph, ratio=0.5, seed=43, score='roc-auc'):
+        edges = graph.edges()
+        nodes = graph.nodes()
+
+        train_graph = GraphSampler(graph, ratio).fit_transform()
+
+        E = embedder.fit()
+
+        train_edges = train_graph.edges()
+        edges_set = set(edges)
+        train_edges_set = set(train_edges)
+
+        test_edges_set = edges_set - train_edges_set
+
+        np.random.seed(seed)
+        test_neg_edges_set = self._generate_negative_set(nodes, test_edges_set)
+        train_neg_edges_set = self._generate_negative_set(nodes, train_edges_set)
+
+        return calc_link_prediction_score(E,
+                                          train_edges,
+                                          list(train_neg_edges_set),
+                                          list(test_edges_set),
+                                          list(test_neg_edges_set),
+                                          score='roc-auc')
+
+    @staticmethod
+    def _generate_negative_set(nodes, positive_set):
+        generated = set()
+        while len(generated) < len(positive_set):
+            edge = np.random.choice(nodes), np.random.choice(nodes)
+            if edge not in positive_set:
+                generated.add(edge)
+        return generated
+

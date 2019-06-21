@@ -1,1 +1,1 @@
-from .experiment import get_experiment
+from .wrapper import get_experiment

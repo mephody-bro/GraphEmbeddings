@@ -12,7 +12,7 @@ def start_experiment(config):
 
 def parse_config(parser):
     parser.add_argument('--experiment', type=str, default="linker")
-    parser.add_argument('--embedder', type=str, default="deepwalk")
+    parser.add_argument('--embedder', type=str, default="hope")
     parser.add_argument('--dataset', type=str, default="football")
     # parser.add_argument('--dimensions', nargs='*', type=int, default=[4, 8, 16])
     parser.add_argument('--dimension', type=int, default=8)
