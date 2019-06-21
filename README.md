@@ -2,6 +2,19 @@
 This repository contains realization of `DDoS` (aka `Histogram loss`)
 algorithm for generating graph embeddings.
 
+
+## How to run
+install dependencies from requirements.txt and launch the run script
+
+`python run.py`
+
+You can also change parameters.
+
+`python run.py --dimensions 32`
+ 
+Look at run.py source for all the params.
+
+
 ## Structure
 All code is stored in folder `final_src`
 
@@ -17,6 +30,3 @@ with any available algorithm.
 Other folders represent sets of experiments for comparing algorithms:
 `link_prediction`, `classification` and `clusterization`.
 
-## How to run
-To make this code work you need to replace path to necessary dataset
-in file `final_src/settings.py` with your local path.
