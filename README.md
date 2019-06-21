@@ -11,7 +11,7 @@ install dependencies from requirements.txt and launch the run script
 You can also change parameters.
 
 ```
-python run.py --dimensions 32
+python run.py --dimensions 32 64
 python run.py --dataset polbooks
 ```
  
