@@ -1,10 +1,6 @@
-from pathlib import Path
-
 import networkx as nx
 import numpy as np
 import scipy.sparse.linalg as lg
-
-from .utils import path_to_embedding, read_embedding, save_embedding
 
 
 class Hope:
@@ -17,19 +13,7 @@ class Hope:
         self.use_cached = use_cached
 
     def fit(self):
-        # path = path_to_embedding(
-        #     root=self.path_to_dumps, method='hope', name=self.graph_name,
-        #     dim=self.dim
-        # )
-        # if self.use_cached:
-        #     if Path(path).exists():
-        #         representation = read_embedding(path)
-        #         print("Loaded cached embedding from " + path)
-        #         return representation
-        #
         representation = self.learn_embedding()
-        #
-        # save_embedding(path, E=np.array(representation))
         return np.array(representation)
 
     def learn_embedding(self):
