@@ -37,7 +37,7 @@ def calc_link_prediction_score(E,
         test_X[i] = E[nodes_dict[edge[0]]] * E[nodes_dict[edge[1]]]
         test_y[i] = 0
         i += 1
-    clf = LogisticRegression()
+    clf = LogisticRegression(solver='lbfgs')
     clf.fit(clf_X, clf_y)
     pred_y = clf.predict_proba(test_X)[:, 1]
     if score == 'roc-auc':

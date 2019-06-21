@@ -12,17 +12,17 @@ class LinkerExperiment:
 
     def run(self):
         method, name, dim = self.config['embedder'], self.config['dataset'], self.config['dimension']
-        a = self._run(self.config, self.embedder, self.graph, score='f1')
-        print("'" + method + ' ' + name + ' ' + str(dim) + "': " + str(a) + ',')
+        a = self._calculate()
+        print("{} {} {}: {}".format(method, name, str(dim), str(a)))
+        return a
 
+    def _calculate(self, ratio=0.5, seed=43):
+        edges = self.graph.edges()
+        nodes = self.graph.nodes()
 
-    def _run(self, config, embedder, graph, ratio=0.5, seed=43, score='roc-auc'):
-        edges = graph.edges()
-        nodes = graph.nodes()
+        train_graph = GraphSampler(self.graph, ratio).fit_transform()
 
-        train_graph = GraphSampler(graph, ratio).fit_transform()
-
-        E = embedder.fit()
+        E = self.embedder.fit()
 
         train_edges = train_graph.edges()
         edges_set = set(edges)

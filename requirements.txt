@@ -3,7 +3,7 @@ scipy
 parse
 pandas
 sklearn
-networkx
+networkx~=1.11
 numpy
 tensorflow-gpu
 gensim
