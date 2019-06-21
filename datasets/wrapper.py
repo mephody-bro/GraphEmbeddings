@@ -5,6 +5,10 @@ graphs_info = {
     'football': {
         'path': 'datasets/cluster-datasets/football.txt',
         'weighted': False
+    },
+    'polbooks': {
+        'path': 'datasets/cluster-datasets/polbooks.txt',
+        'weighted': False
     }
 }
 
