@@ -16,7 +16,8 @@ def start_experiment(arg_config):
 def parse_config(parser):
     parser.add_argument('--experiment', type=str, default="linker")
     parser.add_argument('--embedder', type=str, default="hope")
-    parser.add_argument('--dimensions', nargs='*', type=int, default=[4, 8, 16])
+    # parser.add_argument('--dimensions', nargs='*', type=int, default=[4, 8, 16])
+    parser.add_argument('--dimensions', nargs='*', type=int, default=[4])
     parser.add_argument('--path_to_dumps', type=str, default="dumps")
 
     # Could be football, polbooks

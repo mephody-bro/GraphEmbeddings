@@ -4,17 +4,27 @@ import scipy.sparse.linalg as lg
 
 
 class Hope:
-    def __init__(self, graph, config, beta=0.01, use_cached=True):
+    """
+    Implementation of HOPE graph embedding algorithm
+    """
+    def __init__(self, graph, dimension, name="", beta=0.01, show_error=False):
+        """
+        :param graph: graph to be embedded; it's supposed to be networkx graph object
+        :param dimension: size of the target vector for node
+        :param name: name of the graph
+        """
         self.beta = beta
         self.graph = graph
-        self.graph_name = config['dataset']
-        self.dim = config['dimension']
-        self.path_to_dumps = config['path_to_dumps']
-        self.use_cached = use_cached
+
+        self.graph_name = name
+        self.dim = dimension
+        self.representation = None
+        self.show_error = show_error
 
     def fit(self):
-        representation = self.learn_embedding()
-        return np.array(representation)
+        if self.representation is None:
+            self.representation = self.learn_embedding()
+        return self.representation
 
     def learn_embedding(self):
         if not self.graph:
@@ -32,5 +42,6 @@ class Hope:
 
         p_d_p_t = np.dot(u, np.dot(np.diag(s), vt))
         eig_err = np.linalg.norm(p_d_p_t - S)
-        print('SVD error (low rank): %f' % eig_err)
+        if self.show_error:
+            print('SVD error (low rank): %f' % eig_err)
         return E

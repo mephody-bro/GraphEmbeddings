@@ -7,3 +7,4 @@ networkx~=1.11
 numpy
 tensorflow-gpu
 gensim
+pytest>=4
