@@ -5,22 +5,32 @@ from .metric import calc_link_prediction_score
 
 
 class LinkerExperiment:
-    def __init__(self, config, embedder, graph):
-        self.config = config
+    """
+    Experiment to evaluate embedder algorithms for link prediction task
+    Remove part of the vertices and expects embedding would help to correctly predicts missing
+    """
+    def __init__(self, description, embedder, graph, ratio):
+        """
+        :param description: is used when printing results of the experiment
+        :param embedder: how we'll embed graph to vectors
+        :param graph
+        :param ratio: which ratio of vertices to be deleted
+        """
+        self.description = description
         self.embedder = embedder
         self.graph = graph
+        self.ratio = ratio
 
     def run(self):
-        method, name, dim = self.config['embedder'], self.config['dataset'], self.config['dimension']
         a = self._calculate()
-        print("{} {} {}: {}".format(method, name, str(dim), str(a)))
+        print("{}: {}".format(self.description, str(a)))
         return a
 
-    def _calculate(self, ratio=0.5, seed=43):
+    def _calculate(self, seed=43):
         edges = self.graph.edges()
         nodes = self.graph.nodes()
 
-        train_graph = GraphSampler(self.graph, ratio).fit_transform()
+        train_graph = GraphSampler(self.graph, self.ratio).fit_transform()
 
         E = self.embedder.fit()
 
@@ -49,4 +59,3 @@ class LinkerExperiment:
             if edge not in positive_set:
                 generated.add(edge)
         return generated
-

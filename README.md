@@ -18,4 +18,9 @@ python run.py --dataset polbooks
 Look at run.py source for all the params.
 
 
+To launch the test set:
+```
+python -m pytest
+```
+
 
