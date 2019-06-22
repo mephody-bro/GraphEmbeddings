@@ -3,8 +3,21 @@ from embedders import get_embedder
 from experiments import get_experiment, ConfigGenerator
 
 
-
 def start_experiment(arg_config):
+    """
+    Function to launch the experiments.
+
+    arg_config['dataset'] defines dataset to use:
+        'footaball' and 'polbooks'
+
+    arg_config['embedder'] defines embedding algorithm:
+        'hope'
+
+    arg_config['dimensions'] - the size of target vector.
+        The bigger - the better, but more expensive
+
+    Look at argparse below for full param list
+    """
     configs = ConfigGenerator(arg_config).generate()
     for config in configs:
         graph = get_graph(config['dataset'])
@@ -16,11 +29,8 @@ def start_experiment(arg_config):
 def parse_config(parser):
     parser.add_argument('--experiment', type=str, default="linker")
     parser.add_argument('--embedder', type=str, default="hope")
-    # parser.add_argument('--dimensions', nargs='*', type=int, default=[4, 8, 16])
-    parser.add_argument('--dimensions', nargs='*', type=int, default=[4])
+    parser.add_argument('--dimensions', nargs='*', type=int, default=[4, 8, 16])
     parser.add_argument('--path_to_dumps', type=str, default="dumps")
-
-    # Could be football, polbooks
     parser.add_argument('--dataset', type=str, default="football")
 
 
